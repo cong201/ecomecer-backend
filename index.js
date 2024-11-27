@@ -8,7 +8,7 @@ const bodyParser = require("body-parser");
 const port = process.env.PORT || 3000;
 
 app.use(express.json({ limit: "25mb" }));
-app.use(express.urlencoded({ limit: "25mb" }));
+// app.use(express.urlencoded({ limit: "25mb" }));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -18,6 +18,11 @@ app.use(
     credentials: true,
   })
 );
+
+//all router
+const authRoutes = require("./src/users/user.route");
+app.use("/api/auth", authRoutes);
+
 main()
   .then(() => console.log("moongose is connected successfull"))
   .catch((err) => console.log(err));
