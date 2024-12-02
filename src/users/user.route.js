@@ -16,6 +16,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
+//login user endpoint
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -28,7 +29,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).send({ message: "Password not match" });
     }
     const token = await generateToken(user._id);
-    res.cookie("token", {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: "None",
@@ -50,6 +51,27 @@ router.post("/login", async (req, res) => {
   } catch (error) {
     console.log("Error login in user", error);
     res.status(500).send({ message: "Error login in user" });
+  }
+});
+
+//logut endpoint
+router.post("/logout", async (req, res) => {
+  res.clearCookie("token");
+  res.status(200).send({ message: "Logout successfully!" });
+});
+
+//delete a user
+router.delete("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    res.status(200).send({ message: "User deleted successfully" });
+  } catch (error) {
+    console.log("Error deleting user", error);
+    res.status(500).send({ message: "Error deleting user" });
   }
 });
 
