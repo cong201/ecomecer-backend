@@ -75,4 +75,31 @@ router.delete("/users/:id", async (req, res) => {
   }
 });
 
+//get all users
+router.get("/users", async (req, res) => {
+  try {
+    const users = await User.find({}, "id email role").sort({ createdAt: -1 });
+    res.status(200).send(users);
+  } catch (error) {
+    console.log("Error fetching users", error);
+    res.status(500).send({ message: "Error fetching users" });
+  }
+});
+
+//update user role
+router.put("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+    const user = await User.findByIdAndUpdate(id, { role }, { new: true });
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    res.status(200).send({ message: "User role updated successfully", user });
+  } catch (error) {
+    console.log("Error updating user role", error);
+    res.status(500).send({ message: "Error updating user role" });
+  }
+});
+
 module.exports = router;
