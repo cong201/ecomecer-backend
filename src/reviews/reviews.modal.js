@@ -1,5 +1,5 @@
-const { Schema, model } = require("mongoose");
-const ReviewSchema = new Schema(
+const mongoose = require("mongoose");
+const ReviewSchema = new mongoose.Schema(
   {
     comment: { type: String, require: true },
     rating: { type: Number, require: true },
