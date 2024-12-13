@@ -90,4 +90,30 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+//update a product
+router.patch("/update-product/:id", async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const updatedProduct = await Products.findByIdAndUpdate(
+      productId,
+      {
+        ...req.body,
+      },
+      {
+        new: true,
+      }
+    );
+    if (!updatedProduct) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+    res.status(200).send({
+      message: "Product updated successfully!",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    console.log("Error updating the product", error);
+    res.status(500).send({ message: "Failed to update the product" });
+  }
+});
+
 module.exports = router;
