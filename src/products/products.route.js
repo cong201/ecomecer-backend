@@ -2,6 +2,7 @@ const express = require("express");
 const Products = require("./products.modal");
 const Reviews = require("../reviews/reviews.modal");
 const verifyToken = require("../middleware/verifyToken");
+const verifyAdmin = require("../middleware/verifyAdmin");
 
 const router = express.Router();
 
@@ -92,30 +93,35 @@ router.get("/:id", async (req, res) => {
 });
 
 //update a product
-router.patch("/update-product/:id", verifyToken, async (req, res) => {
-  try {
-    const productId = req.params.id;
-    const updatedProduct = await Products.findByIdAndUpdate(
-      productId,
-      {
-        ...req.body,
-      },
-      {
-        new: true,
+router.patch(
+  "/update-product/:id",
+  verifyToken,
+  verifyAdmin,
+  async (req, res) => {
+    try {
+      const productId = req.params.id;
+      const updatedProduct = await Products.findByIdAndUpdate(
+        productId,
+        {
+          ...req.body,
+        },
+        {
+          new: true,
+        }
+      );
+      if (!updatedProduct) {
+        return res.status(404).send({ message: "Product not found" });
       }
-    );
-    if (!updatedProduct) {
-      return res.status(404).send({ message: "Product not found" });
+      res.status(200).send({
+        message: "Product updated successfully!",
+        product: updatedProduct,
+      });
+    } catch (error) {
+      console.log("Error updating the product", error);
+      res.status(500).send({ message: "Failed to update the product" });
     }
-    res.status(200).send({
-      message: "Product updated successfully!",
-      product: updatedProduct,
-    });
-  } catch (error) {
-    console.log("Error updating the product", error);
-    res.status(500).send({ message: "Failed to update the product" });
   }
-});
+);
 
 //delete product
 router.delete("/:id", verifyToken, async (req, res) => {
